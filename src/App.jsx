@@ -1,6 +1,6 @@
 // src/App.jsx
 import React, { useEffect, useMemo, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 import RoleToggle from "./components/RoleToggle";
 import Projects from "./components/Projects";
@@ -31,8 +31,8 @@ function useTheme() {
   return [theme, setTheme];
 }
 
-/* ---------------- Inline Theme Toggle (simple) ---------------- */
-function InlineThemeToggle({ theme, setTheme }) {
+/* ---------------- Theme toggle (inline) ---------------- */
+function ThemeToggle({ theme, setTheme }) {
   return (
     <button
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
@@ -74,10 +74,10 @@ function Hero({ onCTAClick, onOpenResume }) {
   }, [li, char]);
 
   return (
-    <section className="grid md:grid-cols-2 gap-8 items-center py-12 main-container">
+    <section className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center py-8 md:py-12 main-container">
       <div>
         <motion.h1
-          className="text-3xl sm:text-4xl md:text-5xl font-extrabold leading-tight hero-title"
+          className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight"
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45 }}
@@ -85,22 +85,21 @@ function Hero({ onCTAClick, onOpenResume }) {
           <span className="text-sky-600">Saran</span> Jagadeesan Uma
         </motion.h1>
 
-        <p className="mt-4 text-lg text-slate-600 dark:text-slate-300 min-h-[3rem] hero-sub">
-          <span>{text}</span>
-          <span className="inline-block animate-pulse ml-1">█</span>
+        <p className="mt-3 text-base sm:text-lg text-slate-600 dark:text-slate-300 min-h-[2.5rem]">
+          <span>{text}</span><span className="inline-block animate-pulse ml-1">█</span>
         </p>
 
-        <div className="mt-6 flex flex-wrap gap-3">
+        <div className="mt-4 flex flex-wrap gap-3">
           <button
             onClick={() => onCTAClick && onCTAClick("projects")}
-            className="px-4 py-2 rounded-lg bg-sky-600 text-white font-medium shadow hover:brightness-95"
+            className="px-4 py-2 rounded-lg bg-sky-600 text-white font-medium shadow hover:brightness-95 focus:outline-none focus:ring-2 focus:ring-sky-300"
           >
             See Projects
           </button>
 
           <button
             onClick={() => onOpenResume && onOpenResume()}
-            className="inline-block ml-0 sm:ml-3 px-4 py-2 rounded-lg border border-slate-200 text-sm bg-white hover:shadow"
+            className="px-4 py-2 rounded-lg border border-slate-200 text-sm bg-white hover:shadow focus:outline-none focus:ring-2 focus:ring-slate-200"
           >
             Resume
           </button>
@@ -115,7 +114,7 @@ function Hero({ onCTAClick, onOpenResume }) {
           </a>
         </div>
 
-        <div className="mt-8 grid grid-cols-2 gap-3 text-sm text-slate-700 dark:text-slate-300">
+        <div className="mt-6 grid grid-cols-2 gap-2 text-sm text-slate-700 dark:text-slate-300">
           <div>
             <p className="font-semibold">Location</p>
             <p>Boston, MA</p>
@@ -127,9 +126,9 @@ function Hero({ onCTAClick, onOpenResume }) {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow p-6 section-card">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow p-4 md:p-6">
         <h3 className="font-semibold text-lg text-slate-900 dark:text-slate-100">Highlights</h3>
-        <ul className="mt-4 space-y-2 text-slate-700 dark:text-slate-200">
+        <ul className="mt-3 space-y-2 text-slate-700 dark:text-slate-200 text-sm">
           <li>Strong fundamentals: Data Structures, Algorithms, OOP</li>
           <li>Languages: Java, Python, JavaScript, C++</li>
           <li>Technologies: React, Node.js, MongoDB, MySQL, Docker</li>
@@ -141,10 +140,56 @@ function Hero({ onCTAClick, onOpenResume }) {
   );
 }
 
+/* ---------------- Mobile menu component (small) ---------------- */
+function MobileMenu({ open, onClose, onNavigate, role, setRole, theme, setTheme }) {
+  return (
+    <AnimatePresence>
+      {open && (
+        <motion.div className="fixed inset-0 z-50" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+          <div className="absolute inset-0 bg-black/40" onClick={onClose} />
+          <motion.nav
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "100%" }}
+            transition={{ type: "tween", duration: 0.22 }}
+            className="absolute right-0 top-0 h-full w-3/4 max-w-xs bg-white dark:bg-slate-900 p-4 shadow-lg"
+            aria-label="Mobile menu"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <div className="text-lg font-semibold">Saran</div>
+                <div className="text-xs text-slate-500 dark:text-slate-400">MS Computer Science</div>
+              </div>
+              <button onClick={onClose} className="p-2 rounded-md">Close</button>
+            </div>
+
+            <div className="space-y-3">
+              <button onClick={() => { onNavigate("projects"); onClose(); }} className="w-full text-left px-3 py-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800">Projects</button>
+              <button onClick={() => { onNavigate("skills"); onClose(); }} className="w-full text-left px-3 py-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800">Skills</button>
+              <button onClick={() => { onNavigate("contact"); onClose(); }} className="w-full text-left px-3 py-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800">Contact</button>
+
+              <div className="pt-3 border-t border-slate-100 dark:border-slate-800">
+                <div className="mb-2 text-sm text-slate-500">Role</div>
+                <RoleToggle value={role} onChange={(r) => setRole(r)} />
+              </div>
+
+              <div className="pt-3 border-t border-slate-100 dark:border-slate-800">
+                <div className="flex gap-2">
+                  <button onClick={() => setTheme(theme === "dark" ? "light" : "dark")} className="px-3 py-2 rounded-md border">Toggle theme</button>
+                  <button onClick={() => onClose()} className="px-3 py-2 rounded-md border" onKeyDown={(e) => e.key === 'Enter' && onClose()}>Close</button>
+                </div>
+              </div>
+            </div>
+          </motion.nav>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
 /* ---------------- Main App ---------------- */
 export default function App() {
   const [theme, setTheme] = useTheme();
-
   const [role, setRole] = useState(() => {
     try { return localStorage.getItem("selectedRole") || ROLES.SOFTWARE; } catch { return ROLES.SOFTWARE; }
   });
@@ -156,12 +201,13 @@ export default function App() {
 
   const [resumeOpen, setResumeOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
-  // small-screen friendly scroll helper
   function scrollTo(id) {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
     else window.scrollTo({ top: 0, behavior: "smooth" });
+    setMobileOpen(false);
   }
 
   return (
@@ -174,7 +220,6 @@ export default function App() {
             className="avatar-button"
             aria-label="Open profile preview"
             title="Open profile"
-            style={{ display: "inline-block" }}
           >
             <img
               src="/profile_small.jpg"
@@ -193,70 +238,72 @@ export default function App() {
           </div>
         </div>
 
-        <nav className="flex items-center gap-3">
-          <button onClick={() => scrollTo("projects")} className="text-sm hover:underline hidden sm:inline">Projects</button>
-          <button onClick={() => scrollTo("skills")} className="text-sm hover:underline hidden sm:inline">Skills</button>
-          <button onClick={() => scrollTo("contact")} className="text-sm hover:underline hidden sm:inline">Contact</button>
+        <nav className="hidden sm:flex items-center gap-3">
+          <button onClick={() => scrollTo("projects")} className="text-sm hover:underline">Projects</button>
+          <button onClick={() => scrollTo("skills")} className="text-sm hover:underline">Skills</button>
+          <button onClick={() => scrollTo("contact")} className="text-sm hover:underline">Contact</button>
 
-          {/* on tiny screens, show a compact menu: below we simply keep toggle + resume */}
           <RoleToggle value={role} onChange={setRole} />
 
-          <button
-            onClick={() => setResumeOpen(true)}
-            className="ml-2 px-3 py-2 rounded-md border border-slate-200 text-sm bg-white"
-          >
-            Resume
-          </button>
+          <button onClick={() => setResumeOpen(true)} className="ml-2 px-3 py-2 rounded-md border border-slate-200 text-sm bg-white">Resume</button>
 
-          <div className="ml-2">
-            <InlineThemeToggle theme={theme} setTheme={setTheme} />
-          </div>
+          <ThemeToggle theme={theme} setTheme={setTheme} />
         </nav>
+
+        {/* mobile hamburger */}
+        <div className="sm:hidden flex items-center gap-2">
+          <button onClick={() => setMobileOpen(true)} aria-label="Open menu" className="p-2 rounded-md border">
+            ☰
+          </button>
+        </div>
       </header>
 
       {/* Main content */}
-      <motion.main className="max-w-6xl mx-auto px-4 sm:px-6 md:px-6 pb-20" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}>
-        {/* Hero with typewriter */}
+      <motion.main className="max-w-6xl mx-auto px-4 sm:px-6 md:px-6 pb-16" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}>
         <Hero onCTAClick={(id) => scrollTo(id)} onOpenResume={() => setResumeOpen(true)} />
 
-        {/* Role highlight banner */}
-        <section className="mb-6">
-          <div className={`rounded-2xl p-5 md:p-6 shadow-lg bg-gradient-to-br ${meta.accent}`}>
+        {/* Role banner */}
+        <section className="mb-5">
+          <div className={`rounded-2xl p-4 md:p-6 shadow-lg bg-gradient-to-br ${meta.accent}`}>
             <div className="text-white md:flex md:items-center md:justify-between">
               <div>
                 <h3 className="text-lg md:text-xl font-semibold">{meta.label}</h3>
                 <p className="text-sm md:text-base mt-1 text-white/90 max-w-2xl">{meta.short}</p>
               </div>
-              <div className="mt-4 md:mt-0">
+              <div className="mt-3 md:mt-0">
                 <button onClick={() => setResumeOpen(true)} className="px-4 py-2 rounded-md bg-white text-slate-900 font-medium">View Resume</button>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Projects */}
-        <section id="projects" className="py-6">
+        {/* Projects - responsive grid */}
+        <section id="projects" className="py-4">
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-2xl font-bold">Selected Projects — {meta.label}</h3>
             <div className="text-sm text-slate-500">Role-tailored projects</div>
           </div>
-          <Projects items={currentProjects} />
+
+          <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <Projects items={currentProjects} />
+          </div>
         </section>
 
         {/* Skills */}
-        <section id="skills" className="py-6">
+        <section id="skills" className="py-4">
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-2xl font-bold">Skills — {meta.label}</h3>
             <div className="text-sm text-slate-500">Primary tools & techniques</div>
           </div>
+
           <Skills list={currentSkills} />
         </section>
 
-        {/* Experience (kept compact on mobile) */}
-        <section id="experience" className="py-6">
+        {/* Experience */}
+        <section id="experience" className="py-4">
           <h3 className="text-2xl font-bold mb-3">Experience</h3>
           <div className="space-y-4">
-            <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 md:p-5 shadow section-card">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 md:p-5 shadow">
               <div className="flex items-start justify-between">
                 <div>
                   <h4 className="font-semibold">Teaching Assistant — Northeastern University</h4>
@@ -270,7 +317,7 @@ export default function App() {
               </ul>
             </div>
 
-            <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 md:p-5 shadow section-card">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 md:p-5 shadow">
               <div className="flex items-start justify-between">
                 <div>
                   <h4 className="font-semibold">Software Engineering Intern — Dubai Technologies</h4>
@@ -287,27 +334,38 @@ export default function App() {
         </section>
 
         {/* Contact */}
-        <section id="contact" className="py-6">
+        <section id="contact" className="py-4">
           <h3 className="text-2xl font-bold mb-3">Contact</h3>
-          <div className="mt-4 grid md:grid-cols-2 gap-6">
-            <div className="bg-white dark:bg-slate-800 rounded-2xl p-5 shadow">
+          <div className="mt-4 grid md:grid-cols-2 gap-4">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow">
               <p className="text-sm text-slate-700 dark:text-slate-200">Email: jagadeesanuma.s@northeastern.edu</p>
               <p className="text-sm text-slate-700 dark:text-slate-200 mt-2">Location: Boston, MA</p>
               <p className="text-sm text-slate-700 dark:text-slate-200 mt-2">Available: May 2026</p>
             </div>
 
-            <div className="bg-white dark:bg-slate-800 rounded-2xl p-5 shadow">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow">
               <p className="text-sm text-slate-700 dark:text-slate-200">Prefer to connect on LinkedIn or GitHub — links are at the top. For quick access to my resume, click the Resume button in the header.</p>
             </div>
           </div>
         </section>
 
-        <footer className="mt-10 text-center text-sm text-slate-500 dark:text-slate-400">© {new Date().getFullYear()} Saran Jagadeesan Uma — Built with React & Tailwind</footer>
+        <footer className="mt-8 text-center text-sm text-slate-500 dark:text-slate-400">© {new Date().getFullYear()} Saran Jagadeesan Uma — Built with React & Tailwind</footer>
       </motion.main>
 
       {/* Modals */}
       <ResumeModal open={resumeOpen} onClose={() => setResumeOpen(false)} currentRole={role} />
       <ProfileModal open={profileOpen} onClose={() => setProfileOpen(false)} src="/profile.jpg" name="Saran Jagadeesan Uma" />
+
+      {/* Mobile menu overlay */}
+      <MobileMenu
+        open={mobileOpen}
+        onClose={() => setMobileOpen(false)}
+        onNavigate={(id) => scrollTo(id)}
+        role={role}
+        setRole={setRole}
+        theme={theme}
+        setTheme={setTheme}
+      />
     </div>
   );
 }
