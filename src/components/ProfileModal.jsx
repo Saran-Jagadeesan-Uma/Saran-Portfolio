@@ -1,14 +1,25 @@
 // src/components/ProfileModal.jsx
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
 
-/* base-aware helper for asset URLs */
+/* base-aware helper for assets */
 const B = (p) => (import.meta.env.BASE_URL || "/") + p;
 
 export default function ProfileModal({ open, onClose, src: srcProp, name = "Saran Jagadeesan Uma" }) {
-  // effective src defaults to base-aware profile.jpg if not provided
   const effectiveSrc = srcProp || B("profile.jpg");
+
+  const [status, setStatus] = useState("idle"); // idle | loading | loaded | error
+  const [currentSrc, setCurrentSrc] = useState(effectiveSrc);
+
+  useEffect(() => {
+    if (open) {
+      setCurrentSrc(effectiveSrc);
+      setStatus("loading");
+    } else {
+      setStatus("idle");
+    }
+  }, [open, effectiveSrc]);
 
   // close on Escape
   useEffect(() => {
@@ -50,22 +61,20 @@ export default function ProfileModal({ open, onClose, src: srcProp, name = "Sara
             <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl overflow-hidden">
               <div className="flex items-start justify-between p-4">
                 <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-lg overflow-hidden ring-1 ring-slate-200 dark:ring-slate-700">
+                  <div className="w-16 h-16 rounded-lg overflow-hidden ring-1 ring-slate-200 dark:ring-slate-700 flex-shrink-0">
                     <img
-                      src={B("profile_small.jpg")}
-                      data-large={effectiveSrc}
+                      src={currentSrc}
                       alt={name}
                       className="w-full h-full object-cover"
+                      onLoad={() => setStatus("loaded")}
                       onError={(e) => {
-                        // if small avatar missing, try the large one, otherwise show initials
-                        const t = e.target;
-                        if (t && t.dataset && !t.dataset.fallbackTried) {
-                          t.dataset.fallbackTried = "1";
-                          // try the large image as fallback
-                          t.src = effectiveSrc;
+                        // fallback: try small avatar once, then show initials
+                        if (currentSrc !== B("profile_small.jpg")) {
+                          setCurrentSrc(B("profile_small.jpg"));
+                          setStatus("loading");
                           return;
                         }
-                        // final fallback: replace with initials element
+                        setStatus("error");
                         const parent = e.target.parentNode;
                         if (parent) {
                           parent.innerHTML = `<div class="w-16 h-16 rounded-lg bg-slate-700 text-white flex items-center justify-center font-semibold">SJ</div>`;
@@ -87,25 +96,26 @@ export default function ProfileModal({ open, onClose, src: srcProp, name = "Sara
               <div className="p-6">
                 <div className="grid md:grid-cols-2 gap-6 items-start">
                   <div>
-                    <img
-                      src={effectiveSrc}
-                      alt={name}
-                      className="w-full max-h-[80vh] rounded-lg object-cover object-center shadow-md"
-                      onError={(e) => {
-                        const t = e.target;
-                        // try the small avatar if large fails (only once)
-                        if (t && t.dataset && !t.dataset.smallTried) {
-                          t.dataset.smallTried = "1";
-                          t.src = B("profile_small.jpg");
-                          return;
-                        }
-                        // final fallback -> replace with a placeholder
-                        const parent = t.parentNode;
-                        if (parent) {
-                          parent.innerHTML = `<div class="w-full h-72 rounded-lg bg-slate-700 text-white flex items-center justify-center text-2xl font-semibold">SJ</div>`;
-                        }
-                      }}
-                    />
+                    <div className="w-full bg-slate-50 dark:bg-slate-800 rounded-lg overflow-hidden shadow-md min-h-[14rem]">
+                      <img
+                        src={currentSrc}
+                        alt={name}
+                        className="w-full h-full object-cover object-center"
+                        onLoad={() => setStatus("loaded")}
+                        onError={(e) => {
+                          if (currentSrc !== B("profile_small.jpg")) {
+                            setCurrentSrc(B("profile_small.jpg"));
+                            setStatus("loading");
+                            return;
+                          }
+                          setStatus("error");
+                          const parent = e.target.parentNode;
+                          if (parent) {
+                            parent.innerHTML = `<div class="w-full h-72 rounded-lg bg-slate-700 text-white flex items-center justify-center text-2xl font-semibold">SJ</div>`;
+                          }
+                        }}
+                      />
+                    </div>
                   </div>
 
                   <div>
@@ -116,12 +126,8 @@ export default function ProfileModal({ open, onClose, src: srcProp, name = "Sara
                     </p>
 
                     <div className="mt-4 space-y-2 text-sm">
-                      <div>
-                        <strong className="text-slate-700 dark:text-slate-200">Location:</strong> Boston, MA
-                      </div>
-                      <div>
-                        <strong className="text-slate-700 dark:text-slate-200">Email:</strong> jagadeesanuma.s@northeastern.edu
-                      </div>
+                      <div><strong className="text-slate-700 dark:text-slate-200">Location:</strong> Boston, MA</div>
+                      <div><strong className="text-slate-700 dark:text-slate-200">Email:</strong> jagadeesanuma.s@northeastern.edu</div>
                     </div>
 
                     <div className="mt-6 flex gap-3">
@@ -141,6 +147,12 @@ export default function ProfileModal({ open, onClose, src: srcProp, name = "Sara
                       >
                         Download PDF
                       </a>
+                    </div>
+
+                    {/* subtle debug info */}
+                    <div className="mt-4 text-xs text-slate-500 dark:text-slate-400">
+                      <div><strong>Image status:</strong> <span className={status === "error" ? "text-rose-500" : status === "loaded" ? "text-emerald-500" : "text-slate-500"}>{status}</span></div>
+                      <div className="truncate">src used: <code className="text-xs">{currentSrc}</code></div>
                     </div>
                   </div>
                 </div>
