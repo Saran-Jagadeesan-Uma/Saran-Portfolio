@@ -56,3 +56,25 @@ body {
   padding: 6px 8px;
   border-radius: 8px;
 }
+/* profile modal z-index & image fit */
+.z-60 { z-index: 60; }
+
+/* optional: ensure resume-close already present; if not add: */
+.resume-close {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.04);
+  padding: 6px 8px;
+  border-radius: 8px;
+}
+
+/* subtle image shadow inside modal */
+.profile-popup-img {
+  box-shadow: 0 8px 30px rgba(2,6,23,0.2);
+  border-radius: 10px;
+}
+header button img {
+  transition: transform 220ms cubic-bezier(.2,.9,.2,1);
+}
+header button:hover img {
+  transform: scale(1.06);
+}
