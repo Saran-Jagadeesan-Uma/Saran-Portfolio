@@ -1,11 +1,58 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* small helper */
 body { @apply bg-sky-50 text-slate-900; }
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 
 body {
   font-family: 'Inter', sans-serif;
+}
+/* ===== resume modal & animated gradient border ===== */
+
+/* animated gradient for borders */
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.gradient-border {
+  position: relative;
+  border-radius: 14px;
+  padding: 2px; /* space for border */
+  background: linear-gradient(90deg, rgba(99,102,241,0.18), rgba(59,130,246,0.18), rgba(16,185,129,0.12));
+  background-size: 300% 300%;
+  transition: filter .35s ease;
+  animation: gradientShift 6s ease infinite;
+}
+
+/* inner content area (actual card) */
+.gradient-border > .card-inner {
+  border-radius: 12px;
+  padding: 1.25rem; /* adjust for desired padding */
+  background-clip: padding-box;
+  background-color: rgba(17,24,39,0.85); /* dark glass */
+}
+
+/* hover intensifies the border and subtle glow */
+.gradient-border:hover {
+  filter: saturate(1.15) drop-shadow(0 8px 30px rgba(2,6,23,0.5));
+  transform: translateY(-4px);
+}
+
+/* modal backdrop blur */
+.resume-backdrop {
+  backdrop-filter: blur(6px) saturate(1.05);
+  background-color: rgba(2,6,23,0.6);
+}
+
+/* accessible close button */
+.resume-close {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.04);
+  padding: 6px 8px;
+  border-radius: 8px;
 }
