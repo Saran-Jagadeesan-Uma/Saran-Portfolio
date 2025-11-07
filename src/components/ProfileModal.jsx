@@ -148,12 +148,6 @@ export default function ProfileModal({ open, onClose, src: srcProp, name = "Sara
                         Download PDF
                       </a>
                     </div>
-
-                    {/* subtle debug info */}
-                    <div className="mt-4 text-xs text-slate-500 dark:text-slate-400">
-                      <div><strong>Image status:</strong> <span className={status === "error" ? "text-rose-500" : status === "loaded" ? "text-emerald-500" : "text-slate-500"}>{status}</span></div>
-                      <div className="truncate">src used: <code className="text-xs">{currentSrc}</code></div>
-                    </div>
                   </div>
                 </div>
               </div>
