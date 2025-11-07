@@ -1,7 +1,8 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
+// vite.config.js
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
 
-export default defineConfig(({ command }) => ({
-  base: command === "build" ? "/Saran-Portfolio/" : "/",
+export default defineConfig({
+  base: '/Saran-Portfolio/',
   plugins: [react()],
-}));
+})
