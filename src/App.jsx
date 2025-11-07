@@ -9,6 +9,11 @@ import ResumeModal from "./components/ResumeModal";
 import ProfileModal from "./components/ProfileModal";
 import { ROLE_META, PROJECTS, SKILLS, ROLES } from "./data/content";
 
+/* ---------------- Helper: base-aware path ---------------- */
+// Builds a URL that respects Vite's base (import.meta.env.BASE_URL).
+// In dev BASE_URL is '/', in production after build it's '/Saran-Portfolio/' (per vite.config).
+const B = (p) => (import.meta.env.BASE_URL || "/") + p;
+
 /* ---------------- Theme hook ---------------- */
 function useTheme() {
   const [theme, setTheme] = useState(() => {
@@ -31,8 +36,8 @@ function useTheme() {
   return [theme, setTheme];
 }
 
-/* ---------------- Theme toggle (inline) ---------------- */
-function ThemeToggle({ theme, setTheme }) {
+/* ---------------- Inline Theme Toggle ---------------- */
+function InlineThemeToggle({ theme, setTheme }) {
   return (
     <button
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
@@ -140,56 +145,10 @@ function Hero({ onCTAClick, onOpenResume }) {
   );
 }
 
-/* ---------------- Mobile menu component (small) ---------------- */
-function MobileMenu({ open, onClose, onNavigate, role, setRole, theme, setTheme }) {
-  return (
-    <AnimatePresence>
-      {open && (
-        <motion.div className="fixed inset-0 z-50" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-          <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-          <motion.nav
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ type: "tween", duration: 0.22 }}
-            className="absolute right-0 top-0 h-full w-3/4 max-w-xs bg-white dark:bg-slate-900 p-4 shadow-lg"
-            aria-label="Mobile menu"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <div className="text-lg font-semibold">Saran</div>
-                <div className="text-xs text-slate-500 dark:text-slate-400">MS Computer Science</div>
-              </div>
-              <button onClick={onClose} className="p-2 rounded-md">Close</button>
-            </div>
-
-            <div className="space-y-3">
-              <button onClick={() => { onNavigate("projects"); onClose(); }} className="w-full text-left px-3 py-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800">Projects</button>
-              <button onClick={() => { onNavigate("skills"); onClose(); }} className="w-full text-left px-3 py-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800">Skills</button>
-              <button onClick={() => { onNavigate("contact"); onClose(); }} className="w-full text-left px-3 py-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800">Contact</button>
-
-              <div className="pt-3 border-t border-slate-100 dark:border-slate-800">
-                <div className="mb-2 text-sm text-slate-500">Role</div>
-                <RoleToggle value={role} onChange={(r) => setRole(r)} />
-              </div>
-
-              <div className="pt-3 border-t border-slate-100 dark:border-slate-800">
-                <div className="flex gap-2">
-                  <button onClick={() => setTheme(theme === "dark" ? "light" : "dark")} className="px-3 py-2 rounded-md border">Toggle theme</button>
-                  <button onClick={() => onClose()} className="px-3 py-2 rounded-md border" onKeyDown={(e) => e.key === 'Enter' && onClose()}>Close</button>
-                </div>
-              </div>
-            </div>
-          </motion.nav>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
-}
-
 /* ---------------- Main App ---------------- */
 export default function App() {
   const [theme, setTheme] = useTheme();
+
   const [role, setRole] = useState(() => {
     try { return localStorage.getItem("selectedRole") || ROLES.SOFTWARE; } catch { return ROLES.SOFTWARE; }
   });
@@ -220,10 +179,11 @@ export default function App() {
             className="avatar-button"
             aria-label="Open profile preview"
             title="Open profile"
+            style={{ display: "inline-block" }}
           >
             <img
-              src="/profile_small.jpg"
-              srcSet="/profile_small.jpg 1x, /profile_small.jpg 2x"
+              src={B("profile_small.jpg")}
+              srcSet={`${B("profile_small.jpg")} 1x, ${B("profile_small.jpg")} 2x`}
               alt="Saran Jagadeesan Uma"
               width="44"
               height="44"
@@ -247,10 +207,9 @@ export default function App() {
 
           <button onClick={() => setResumeOpen(true)} className="ml-2 px-3 py-2 rounded-md border border-slate-200 text-sm bg-white">Resume</button>
 
-          <ThemeToggle theme={theme} setTheme={setTheme} />
+          <InlineThemeToggle theme={theme} setTheme={setTheme} />
         </nav>
 
-        {/* mobile hamburger */}
         <div className="sm:hidden flex items-center gap-2">
           <button onClick={() => setMobileOpen(true)} aria-label="Open menu" className="p-2 rounded-md border">
             ☰
@@ -277,7 +236,7 @@ export default function App() {
           </div>
         </section>
 
-        {/* Projects - responsive grid */}
+        {/* Projects */}
         <section id="projects" className="py-4">
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-2xl font-bold">Selected Projects — {meta.label}</h3>
@@ -354,18 +313,43 @@ export default function App() {
 
       {/* Modals */}
       <ResumeModal open={resumeOpen} onClose={() => setResumeOpen(false)} currentRole={role} />
-      <ProfileModal open={profileOpen} onClose={() => setProfileOpen(false)} src="/profile.jpg" name="Saran Jagadeesan Uma" />
+      <ProfileModal open={profileOpen} onClose={() => setProfileOpen(false)} src={B("profile.jpg")} name="Saran Jagadeesan Uma" />
 
-      {/* Mobile menu overlay */}
-      <MobileMenu
-        open={mobileOpen}
-        onClose={() => setMobileOpen(false)}
-        onNavigate={(id) => scrollTo(id)}
-        role={role}
-        setRole={setRole}
-        theme={theme}
-        setTheme={setTheme}
-      />
+      {/* Mobile menu (kept simple) */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div className="fixed inset-0 z-50" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <div className="absolute inset-0 bg-black/40" onClick={() => setMobileOpen(false)} />
+            <motion.nav initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }} transition={{ type: "tween", duration: 0.22 }} className="absolute right-0 top-0 h-full w-3/4 max-w-xs bg-white dark:bg-slate-900 p-4 shadow-lg">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <div className="text-lg font-semibold">Saran</div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400">MS Computer Science</div>
+                </div>
+                <button onClick={() => setMobileOpen(false)} className="p-2 rounded-md">Close</button>
+              </div>
+
+              <div className="space-y-3">
+                <button onClick={() => { scrollTo("projects"); setMobileOpen(false); }} className="w-full text-left px-3 py-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800">Projects</button>
+                <button onClick={() => { scrollTo("skills"); setMobileOpen(false); }} className="w-full text-left px-3 py-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800">Skills</button>
+                <button onClick={() => { scrollTo("contact"); setMobileOpen(false); }} className="w-full text-left px-3 py-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800">Contact</button>
+
+                <div className="pt-3 border-t border-slate-100 dark:border-slate-800">
+                  <div className="mb-2 text-sm text-slate-500">Role</div>
+                  <RoleToggle value={role} onChange={(r) => setRole(r)} />
+                </div>
+
+                <div className="pt-3 border-t border-slate-100 dark:border-slate-800">
+                  <div className="flex gap-2">
+                    <button onClick={() => setTheme(theme === "dark" ? "light" : "dark")} className="px-3 py-2 rounded-md border">Toggle theme</button>
+                    <button onClick={() => setMobileOpen(false)} className="px-3 py-2 rounded-md border">Close</button>
+                  </div>
+                </div>
+              </div>
+            </motion.nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
