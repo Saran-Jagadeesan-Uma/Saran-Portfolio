@@ -102,9 +102,13 @@ function Hero({ onCTAClick, onOpenResume }) {
             See Projects
           </button>
 
+          {/* Theme-safe Resume button */}
           <button
             onClick={() => onOpenResume && onOpenResume()}
-            className="px-4 py-2 rounded-lg border border-slate-200 text-sm bg-white hover:shadow focus:outline-none focus:ring-2 focus:ring-slate-200"
+            className="px-4 py-2 rounded-lg border text-sm
+                       bg-white text-slate-900 border-slate-200
+                       dark:bg-slate-700 dark:text-slate-100 dark:border-slate-600
+                       hover:shadow focus:outline-none focus:ring-2 focus:ring-slate-200"
           >
             Resume
           </button>
@@ -205,7 +209,16 @@ export default function App() {
 
           <RoleToggle value={role} onChange={setRole} />
 
-          <button onClick={() => setResumeOpen(true)} className="ml-2 px-3 py-2 rounded-md border border-slate-200 text-sm bg-white">Resume</button>
+          {/* Theme-safe header Resume button */}
+          <button
+            onClick={() => setResumeOpen(true)}
+            className="ml-2 px-3 py-2 rounded-md border text-sm
+                       bg-white text-slate-900 border-slate-200
+                       dark:bg-slate-700 dark:text-slate-100 dark:border-slate-600
+                       hover:brightness-95 focus:outline-none focus:ring-2 focus:ring-sky-300"
+          >
+            Resume
+          </button>
 
           <InlineThemeToggle theme={theme} setTheme={setTheme} />
         </nav>
@@ -230,7 +243,14 @@ export default function App() {
                 <p className="text-sm md:text-base mt-1 text-white/90 max-w-2xl">{meta.short}</p>
               </div>
               <div className="mt-3 md:mt-0">
-                <button onClick={() => setResumeOpen(true)} className="px-4 py-2 rounded-md bg-white text-slate-900 font-medium">View Resume</button>
+                {/* Theme-safe banner button */}
+                <button
+                  onClick={() => setResumeOpen(true)}
+                  className="px-4 py-2 rounded-md bg-white text-slate-900 font-medium
+                             dark:bg-slate-700 dark:text-slate-100 dark:border-slate-600"
+                >
+                  View Resume
+                </button>
               </div>
             </div>
           </div>
