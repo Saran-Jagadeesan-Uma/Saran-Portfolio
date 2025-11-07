@@ -1,0 +1,10 @@
+npm run build
+
+cd dist
+git init
+git checkout -b gh-pages
+git add -A
+git commit -m "Deploy: resume modal base-aware links"
+git remote add origin https://github.com/Saran-Jagadeesan-Uma/Saran-Portfolio.git
+git push -f origin gh-pages
+cd ..
