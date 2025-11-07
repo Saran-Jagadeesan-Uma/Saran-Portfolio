@@ -2,7 +2,7 @@
   "name": "saran-portfolio",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https:https://github.com/Saran-Jagadeesan-Uma/Saran-Portfolio",
+  "homepage": "https://saran-jagadeesan-uma.github.io/Saran-Portfolio/",
   "type": "module",
   "scripts": {
     "dev": "vite",
