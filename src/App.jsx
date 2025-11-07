@@ -30,7 +30,7 @@ function useTheme() {
     const root = document.documentElement;
     if (theme === "dark") root.classList.add("dark");
     else root.classList.remove("dark");
-    try { localStorage.setItem("theme", theme); } catch {}
+    try { localStorage.setItem("theme", theme); } catch { }
   }, [theme]);
 
   return [theme, setTheme];
@@ -152,7 +152,7 @@ export default function App() {
   const [role, setRole] = useState(() => {
     try { return localStorage.getItem("selectedRole") || ROLES.SOFTWARE; } catch { return ROLES.SOFTWARE; }
   });
-  useEffect(() => { try { localStorage.setItem("selectedRole", role); } catch {} }, [role]);
+  useEffect(() => { try { localStorage.setItem("selectedRole", role); } catch { } }, [role]);
 
   const meta = useMemo(() => ROLE_META[role], [role]);
   const currentProjects = useMemo(() => PROJECTS.filter(p => p.role === role), [role]);
@@ -243,7 +243,7 @@ export default function App() {
             <div className="text-sm text-slate-500">Role-tailored projects</div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 items-stretch">
             <Projects items={currentProjects} />
           </div>
         </section>
